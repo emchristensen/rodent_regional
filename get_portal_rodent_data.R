@@ -53,6 +53,7 @@ portal_octobers_rodents = rodent_data %>%
                 plot %in% selected_plots,
                 period %in% selected_periods$period,
                 year<=2017) %>%
+  dplyr::select(-censustarget)
   dplyr::arrange(recordID)
 
 # write to csv
