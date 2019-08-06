@@ -7,27 +7,55 @@
 
 library(portalr)
 library(tidyverse)
+library(lubridate)
 
 # download/load data: version 1.115.0
-data_tables <- load_rodent_data(path='.')
+download_observations("./PortalDatav115", version = "1.115.0")
+data_tables <- load_rodent_data(path='./PortalDatav115')
 
-rodent_data = data_tables$rodent_data
-plots_table = data_tables$plots_table
-species_table = data_tables$species_table
+rodent_data <- data_tables$rodent_data
+species_table <- data_tables$species_table
+trapping_table <- data_tables$trapping_table
 
-# merge rodent data with support tables
-rodent_plots = merge(rodent_data, plots_table[,c('year','month','plot','treatment')], 
-                     by=c('year','month','plot'), all.x=T) %>%
-  merge(species_table[,c('species','scientificname','censustarget')], by='species', all.x=T)
+# this analysis will be restricted to only the 4 plots that have been controls for the entire experiment 1977-2017
+selected_plots = c(4,11,14,17)
 
+# find select census dates: closest census to October 15 for each year
+#  create date column
+trapping_table$date = as.Date(paste(trapping_table$year, trapping_table$month, trapping_table$day, sep='-'))
+#  create table of first date of trapping for each period
+trapping_dates = trapping_table %>%
+  dplyr::select(period, date) %>%
+  dplyr::group_by(period) %>%
+  dplyr::summarise(date = min(date),
+            year = lubridate::year(date),
+            october= as.Date(paste(year,'10','15',sep='-')),
+            datediff=abs(date-october))
+#  identify trapping period closest to Oct 15 for each year
+selected_periods = trapping_dates %>%
+  dplyr::group_by(year) %>%
+  dplyr::slice(which.min(datediff))
 
-# filter for: only control plots, only target species, only October censuses
-portal_octobers = rodent_plots %>%
-  dplyr::filter(treatment=='control', month==10, censustarget==1) %>%
-  dplyr::select(recordID, year, month, day, period, plot, treatment, note1, stake, species, 
-                scientificname, sex, reprod, age, testes, vagina, pregnant, nipples, lactation,
-                hfl, wgt, tag, note2, ltag, note3, prevrt, prevlet, nestdir, neststk, note4, note5) %>%
-  dplyr::arrange(period, plot)
+# extract trapping info [only selected plots and periods]
+portal_octobers_trapping = trapping_table %>%
+  dplyr::filter(period %in% selected_periods$period,
+                plot %in% selected_plots,
+                sampled==1,
+                year<=2017) %>%
+  dplyr::group_by(period, year) %>%
+  dplyr::summarize(num_plots=length(unique(plot)),
+                   num_traps=sum(effort))
+
+# extract rodent capture data [only selected plots and periods]
+portal_octobers_rodents = rodent_data %>%
+  merge(species_table[,c('species','scientificname','censustarget')], by='species', all.x=T) %>%
+  dplyr::filter(censustarget==1,
+                plot %in% selected_plots,
+                period %in% selected_periods$period,
+                year<=2017) %>%
+  dplyr::select(-censustarget)
+  dplyr::arrange(recordID)
 
 # write to csv
-write.csv(portal_octobers, "portal_rodent_controlplots_1977_2017.csv")
+write.csv(portal_octobers_rodents, "portal_rodent_controlplots_1977_2017.csv", row.names=F)
+write.csv(portal_octobers_trapping, "portal_trapping_effort_1977_2017.csv", row.names=F)
