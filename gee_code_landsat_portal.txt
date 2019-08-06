@@ -1,0 +1,65 @@
+// NDVI function -- from thesis 
+var addNDVI = function(image) {
+  var ndvi = image.normalizedDifference(['B4', 'B3']).rename('NDVI');
+  return image.addBands(ndvi);
+};
+
+// cloud mask function
+var addcloudmask = function(image) {
+  // Add a cloud score band  
+  var scored = ee.Algorithms.Landsat.simpleCloudScore(image);
+  // Create a mask from the cloud score band (set threshold at 20% probability) and combine it with the image mask.
+  var mask = scored.select(['cloud']).lte(20);
+  // Apply the mask to the image and display the result.
+  return image.updateMask(mask);
+}
+
+// function to calculate mean ndvi of each image
+var getmeanndvi = function(image) {
+  // Get a dictionary of means on the original image.
+  var means = image.reduceRegion({
+    reducer: ee.Reducer.mean(),
+    geometry: Portal,
+    scale: 30});
+  return ee.Feature(null, means);
+}
+
+//Load Landsat5 collection
+var landsat5 = ee.ImageCollection('LANDSAT/LT05/C01/T1_TOA')
+  .filterDate('1990-08-01', '1990-12-31')
+  .filterBounds(Portal);
+
+var singleimage = landsat5.first();
+//Map.addLayer(singleimage, {bands: ['B4','B3','B2']});
+
+
+// test on single image
+var test1 = addcloudmask(singleimage);
+var test2 = addNDVI(test1);
+var testmeanfeature = getmeanndvi(test2)
+// Make a feature without geometry and set the properties to the dictionary of means.
+//var feature = ee.Feature(null, testmean);
+print(testmeanfeature)
+//Map.addLayer(test1, {bands: ['B4','B3','B2']}, 'masked')
+//print(test2)
+
+
+// Apply mask and ndvi functions to entire collection
+var maskedcollection = landsat5
+  .map(addcloudmask)
+  .map(addNDVI)
+  .select('NDVI');
+//print(maskedcollection)
+Map.addLayer(maskedcollection)
+
+var testcollection = maskedcollection.map(getmeanndvi);
+print(testcollection)
+
+// Export the feature collection
+Export.table.toDrive({
+  collection: testcollection,
+  description: 'exportTableExample',
+  fileFormat: 'CSV'
+});
+
+
