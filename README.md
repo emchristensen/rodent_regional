@@ -7,21 +7,27 @@
 
 **portal_trapping_effort_1977_2017.csv** - trapping effort; output of "get_portal_rodent_data.R"
 
-### Google earth engine:
-Steps
- - get landsat collection (works)
+## Google earth engine to get NDVI:
+
+**gee_code_landsat5_SR_NDVI_Portal.txt** - code used in GEE to extract NDVI for area around Portal
+
+**Landsat5_SR_NDVI_Portal_1995_2006.csv** - NDVI data around Portal 1995-2006 derived from Landsat5 Surface Reflectance data
+
+**Landsat5_SR_NDVI_Portal_2004_2013.csv** - NDVI data around Portal 2004-2013 derived from Landsat5 Surface Reflectance data
+
+Processing Steps
+ - get landsat images that intersect with study area
  - calculate and apply cloud mask (works, but ee.Algorithms.Landsat.simpleCloudScore is not the best method)
- - calculate ndvi as additional band (works)
- - calculate mean ndvi for each image (works? but can't figure out how to get date attached to featurecollection)
- - export table of mean ndvi (works! writes to my google drive)
+ - calculate ndvi as additional band
+ - calculate mean ndvi for each image
+ - export table of mean ndvi
 
 
 
 Resources I used for GEE:
 https://developers.google.com/earth-engine/exporting
+
 Schmid thesis: https://www.researchgate.net/publication/320708352_Using_Google_Earth_Engine_for_Landsat_NDVI_time_series_analysis_to_indicate_the_present_status_of_forest_stands
 
 Cloud masking:
 https://developers.google.com/earth-engine/landsat
-=======
-Code for manipulating the Portal data for the regional rodent project.
