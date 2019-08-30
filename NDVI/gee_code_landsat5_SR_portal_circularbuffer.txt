@@ -5,7 +5,7 @@ var startdate = '1995-01-01';
 var enddate = '2006-12-31';
 
 // define circles around each trapping point
-var Portal = ee.Geometry.Point([-106.080, 31.938]).buffer(buffersize); 
+var studyarea = ee.Geometry.Point([-109.080, 31.938]).buffer(buffersize); 
 
 // function to calculate NDVI and add it to image as a band 
 var addNDVI = function(image) {
@@ -45,15 +45,15 @@ var getmeanndvi = function(image) {
   // Get a dictionary of means on the original image.
   var means = image.reduceRegion({
     reducer: reducers,
-    geometry: Portal,
+    geometry: studyarea,
     scale: 30});
-  return ee.Feature(Portal, means);
+  return ee.Feature(studyarea, means);
 }
 
 //Load Landsat5 collection
 var landsat5 = ee.ImageCollection('LANDSAT/LT05/C01/T1_SR')
   .filterDate(startdate, enddate)
-  .filterBounds(Portal);
+  .filterBounds(studyarea);
 
 
 // test on single image
@@ -79,13 +79,13 @@ var maskedcollection = landsat5
   .select('NDVI');
 //Map.addLayer(maskedcollection)
 
-var portalndvi = maskedcollection.map(getmeanndvi);
-print(portalndvi)
+var studyareandvi = maskedcollection.map(getmeanndvi);
+print(studyareandvi)
 
 // Export the feature collection
 Export.table.toDrive({
-  collection: portalndvi,
-  description: 'Landsat5_SR_NDVI_Portal',
+  collection: studyareandvi,
+  description: 'Landsat5_SR_NDVI_studyarea',
   fileFormat: 'CSV'
 });
 
