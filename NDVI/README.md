@@ -1,22 +1,18 @@
-# rodent_regional
+## NDVI
+Used Google Earth Engine to obtain Landsat5 data for all sites.
 
-## Files
-**get_portal_rodent_data.R** - code for downloading version 1.115.0 of the PortalData collection and extracting data wanted for this project
+**GEEcode** - folder containing google earth engine code used and raw output from that code
 
-**portal_rodent_controlplots_1977_2017.csv** - rodent capture data; output of "get_portal_rodent_data.R"
+**oldcode** - folder containing old scripts, not the final versions
 
-**portal_trapping_effort_1977_2017.csv** - trapping effort; output of "get_portal_rodent_data.R"
+**ndvi_1995_2006.csv** - monthly ndvi for all locations 1995-2006
 
-## Google earth engine to get NDVI:
+**ndvi_2004_2013.csv** - monthly ndvi for all locations 2004-2013
 
-**gee_code_landsat5_SR_NDVI_Portal.txt** - code used in GEE to extract NDVI for area around Portal
+**plot_NDVI.R** - R code for plotting ndvi as time series
 
-**Landsat5_SR_NDVI_Portal_1995_2006.csv** - NDVI data around Portal 1995-2006 derived from Landsat5 Surface Reflectance data
-
-**Landsat5_SR_NDVI_Portal_2004_2013.csv** - NDVI data around Portal 2004-2013 derived from Landsat5 Surface Reflectance data
-
-Processing Steps
- - get landsat images that intersect with study area
+## Processing Steps
+ - get landsat images that intersect with study area (1000m radius around trapping points)
  - calculate and apply cloud mask (works, but ee.Algorithms.Landsat.simpleCloudScore is not the best method)
  - calculate ndvi as additional band
  - calculate mean ndvi for each image
