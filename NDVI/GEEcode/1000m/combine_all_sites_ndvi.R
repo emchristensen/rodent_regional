@@ -20,7 +20,9 @@ get_date_from_index = function(ndviframe) {
 #' @param min_pct_pixel_coverage minimum % clear pixels in order to keep the data from the image
 process_individual_ndvi_file = function(ndviframe, min_pct_pixel_coverage) {
   totalpixels = max(ndviframe$NDVI_count)
+  # remove data points where there aren't enough good pixels, or if NDVI_mean is <0
   ndviframe$NDVI_mean[ndviframe$NDVI_count<(totalpixels*min_pct_pixel_coverage)] <- NA
+  ndviframe$NDVI_mean[ndviframe$NDVI_mean<0] <- NA
   
   ndviframe2 = ndviframe %>%
     dplyr::select(year, month, NDVI_mean) %>%
