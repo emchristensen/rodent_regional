@@ -1,5 +1,5 @@
 # Combine NDVI from the various sites into one data frame
-# EMC 9/25/19
+# EMC 12/18/19
 
 library(dplyr)
 
@@ -130,77 +130,77 @@ write.csv(ndvi_1995_2006, 'NDVI/ndvi_1995_2006.csv', row.names = F)
 
 # =======================================
 # combine all 2004-2013 timeseries
-jrn1b = read.csv('NDVI/GEEcode/1000m/Landsat5_SR_NDVI_JRN_ecotone3_2004_2013.csv', stringsAsFactors = F) %>%
+jrn1b = read.csv('NDVI/GEEcode/1000m/Landsat7_SR_NDVI_JRN_ecotone3_2004_2013.csv', stringsAsFactors = F) %>%
   get_date_from_index() %>%
   process_individual_ndvi_file(min_pct_pixel_coverage = min_pct_pixel_coverage) %>%
   dplyr::select(year, month,
                 JRN_ecotone3 = NDVI)
-jrn2b = read.csv('NDVI/GEEcode/1000m/Landsat5_SR_NDVI_JRN_ecotone9_2004_2013.csv', stringsAsFactors = F) %>%
+jrn2b = read.csv('NDVI/GEEcode/1000m/Landsat7_SR_NDVI_JRN_ecotone9_2004_2013.csv', stringsAsFactors = F) %>%
   get_date_from_index() %>%
   process_individual_ndvi_file(min_pct_pixel_coverage = min_pct_pixel_coverage) %>%
   dplyr::select(year, month,
                 JRN_ecotone9 = NDVI)
-jrn3b = read.csv('NDVI/GEEcode/1000m/Landsat5_SR_NDVI_JRN_ecotone12_2004_2013.csv', stringsAsFactors = F) %>%
+jrn3b = read.csv('NDVI/GEEcode/1000m/Landsat7_SR_NDVI_JRN_ecotone12_2004_2013.csv', stringsAsFactors = F) %>%
   get_date_from_index() %>%
   process_individual_ndvi_file(min_pct_pixel_coverage = min_pct_pixel_coverage) %>%
   dplyr::select(year, month,
                 JRN_ecotone12 = NDVI)
-jrn4b = read.csv('NDVI/GEEcode/1000m/Landsat5_SR_NDVI_JRN_SMES_blackgrama_2004_2013.csv', stringsAsFactors = F) %>%
+jrn4b = read.csv('NDVI/GEEcode/1000m/Landsat7_SR_NDVI_JRN_SMES_blackgrama_2004_2013.csv', stringsAsFactors = F) %>%
   get_date_from_index() %>%
   process_individual_ndvi_file(min_pct_pixel_coverage = min_pct_pixel_coverage) %>%
   dplyr::select(year, month,
                 JRN_SMES_blackgrama = NDVI)
-jrn5b = read.csv('NDVI/GEEcode/1000m/Landsat5_SR_NDVI_JRN_SMES_creosote_2004_2013.csv', stringsAsFactors = F) %>%
+jrn5b = read.csv('NDVI/GEEcode/1000m/Landsat7_SR_NDVI_JRN_SMES_creosote_2004_2013.csv', stringsAsFactors = F) %>%
   get_date_from_index() %>%
   process_individual_ndvi_file(min_pct_pixel_coverage = min_pct_pixel_coverage) %>%
   dplyr::select(year, month,
                 JRN_SMES_creosote = NDVI)
-porb = read.csv('NDVI/GEEcode/1000m/Landsat5_SR_NDVI_Portal_2004_2013.csv', stringsAsFactors = F) %>%
+porb = read.csv('NDVI/GEEcode/1000m/Landsat7_SR_NDVI_Portal_2004_2013.csv', stringsAsFactors = F) %>%
   get_date_from_index() %>%
   process_individual_ndvi_file(min_pct_pixel_coverage = min_pct_pixel_coverage) %>%
   dplyr::select(year, month,
                 Portal = NDVI)
-sev1b = read.csv('NDVI/GEEcode/1000m/Landsat5_SR_NDVI_SEV_5pgrass_2004_2013.csv', stringsAsFactors = F) %>%
+sev1b = read.csv('NDVI/GEEcode/1000m/Landsat7_SR_NDVI_SEV_5pgrass_2004_2013.csv', stringsAsFactors = F) %>%
   get_date_from_index() %>%
   process_individual_ndvi_file(min_pct_pixel_coverage = min_pct_pixel_coverage) %>%
   dplyr::select(year, month,
                 SEV_5pgrass = NDVI)
-sev2b = read.csv('NDVI/GEEcode/1000m/Landsat5_SR_NDVI_SEV_5plarrea_2004_2013.csv', stringsAsFactors = F) %>%
+sev2b = read.csv('NDVI/GEEcode/1000m/Landsat7_SR_NDVI_SEV_5plarrea_2004_2013.csv', stringsAsFactors = F) %>%
   get_date_from_index() %>%
   process_individual_ndvi_file(min_pct_pixel_coverage = min_pct_pixel_coverage) %>%
   dplyr::select(year, month,
                 SEV_5plarrea = NDVI)
-sev3b = read.csv('NDVI/GEEcode/1000m/Landsat5_SR_NDVI_SEV_blugrama_2004_2013.csv', stringsAsFactors = F) %>%
+sev3b = read.csv('NDVI/GEEcode/1000m/Landsat7_SR_NDVI_SEV_blugrama_2004_2013.csv', stringsAsFactors = F) %>%
   get_date_from_index() %>%
   process_individual_ndvi_file(min_pct_pixel_coverage = min_pct_pixel_coverage) %>%
   dplyr::select(year, month,
                 SEV_blugrama = NDVI)
-sev4b = read.csv('NDVI/GEEcode/1000m/Landsat5_SR_NDVI_SEV_goatdraw_2004_2013.csv', stringsAsFactors = F) %>%
+sev4b = read.csv('NDVI/GEEcode/1000m/Landsat7_SR_NDVI_SEV_goatdraw_2004_2013.csv', stringsAsFactors = F) %>%
   get_date_from_index() %>%
   process_individual_ndvi_file(min_pct_pixel_coverage = min_pct_pixel_coverage) %>%
   dplyr::select(year, month,
                 SEV_goatdraw = NDVI)
-sev5b = read.csv('NDVI/GEEcode/1000m/Landsat5_SR_NDVI_SEV_rsgrass_2004_2013.csv', stringsAsFactors = F) %>%
+sev5b = read.csv('NDVI/GEEcode/1000m/Landsat7_SR_NDVI_SEV_rsgrass_2004_2013.csv', stringsAsFactors = F) %>%
   get_date_from_index() %>%
   process_individual_ndvi_file(min_pct_pixel_coverage = min_pct_pixel_coverage) %>%
   dplyr::select(year, month,
                 SEV_rsgrass = NDVI)
-sev6b = read.csv('NDVI/GEEcode/1000m/Landsat5_SR_NDVI_SEV_rslarrea_2004_2013.csv', stringsAsFactors = F) %>%
+sev6b = read.csv('NDVI/GEEcode/1000m/Landsat7_SR_NDVI_SEV_rslarrea_2004_2013.csv', stringsAsFactors = F) %>%
   get_date_from_index() %>%
   process_individual_ndvi_file(min_pct_pixel_coverage = min_pct_pixel_coverage) %>%
   dplyr::select(year, month,
                 SEV_rslarrea = NDVI)
-sev7b = read.csv('NDVI/GEEcode/1000m/Landsat5_SR_NDVI_SEV_savanna_2004_2013.csv', stringsAsFactors = F) %>%
+sev7b = read.csv('NDVI/GEEcode/1000m/Landsat7_SR_NDVI_SEV_savanna_2004_2013.csv', stringsAsFactors = F) %>%
   get_date_from_index() %>%
   process_individual_ndvi_file(min_pct_pixel_coverage = min_pct_pixel_coverage) %>%
   dplyr::select(year, month,
                 SEV_savanna = NDVI)
-sev8b = read.csv('NDVI/GEEcode/1000m/Landsat5_SR_NDVI_SEV_two22_2004_2013.csv', stringsAsFactors = F) %>%
+sev8b = read.csv('NDVI/GEEcode/1000m/Landsat7_SR_NDVI_SEV_two22_2004_2013.csv', stringsAsFactors = F) %>%
   get_date_from_index() %>%
   process_individual_ndvi_file(min_pct_pixel_coverage = min_pct_pixel_coverage) %>%
   dplyr::select(year, month,
                 SEV_two22 = NDVI)
-sgsb = read.csv('NDVI/GEEcode/1000m/Landsat5_SR_NDVI_SGS_2004_2013.csv', stringsAsFactors = F) %>%
+sgsb = read.csv('NDVI/GEEcode/1000m/Landsat7_SR_NDVI_SGS_2004_2013.csv', stringsAsFactors = F) %>%
   get_date_from_index() %>%
   process_individual_ndvi_file(min_pct_pixel_coverage = min_pct_pixel_coverage) %>%
   dplyr::select(year, month,
