@@ -15,16 +15,6 @@ var addNDVI = function(image) {
   return image.addBands(ndvi);
 };
 
-// Cloud mask function from Examples > Cloud Masking > Landsat8 TOA
-// Uses BQA quality band included in landsat TOA products
-var maskL8 = function(image) {
-  var qa = image.select('BQA');
-  /// Check that the cloud bit (bit 4) is off.
-  // See https://landsat.usgs.gov/collectionqualityband
-  var mask = qa.bitwiseAnd(1 << 4).eq(0);
-  return image.updateMask(mask);
-}
-
 // function from Examples > Cloud Masking > Landsat457
 var cloudMaskL457 = function(image) {
   var qa = image.select('pixel_qa');
@@ -57,8 +47,8 @@ var landsat5_time1 = ee.ImageCollection('LANDSAT/LT05/C01/T1_SR')
   .filterDate(startdate1, enddate1)
   .filterBounds(studyarea);
 
-//Load Landsat5 collection: time section 2
-var landsat5_time2 = ee.ImageCollection('LANDSAT/LT05/C01/T1_SR')
+//Load Landsat7 collection: time section 2
+var landsat7_time2 = ee.ImageCollection('LANDSAT/LE07/C01/T1_SR')
   .filterDate(startdate2, enddate2)
   .filterBounds(studyarea);
 
@@ -73,7 +63,7 @@ var studyareandvi_time1 = maskedcollection_time1.map(getmeanndvi);
 print(studyareandvi_time1)
 
 // Apply cloud mask and ndvi functions to time section 2
-var maskedcollection_time2 = landsat5_time2
+var maskedcollection_time2 = landsat7_time2
   .map(cloudMaskL457)
   .map(addNDVI)
   .select('NDVI');
@@ -89,7 +79,7 @@ Export.table.toDrive({
 
 Export.table.toDrive({
   collection: studyareandvi_time2,
-  description: 'Landsat5_SR_NDVI_Portal_2004_2013',
+  description: 'Landsat7_SR_NDVI_Portal_2004_2013',
   fileFormat: 'CSV'
 });
 
