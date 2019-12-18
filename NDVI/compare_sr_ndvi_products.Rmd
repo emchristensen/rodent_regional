@@ -1,0 +1,85 @@
+---
+title: "compare_SR_NDVI_products"
+author: "Erica Christensen"
+date: "12/18/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+
+# functions (from combine_all_sites_ndvi.R)
+#' @description NDVI data from google earth engine: get date information from system.index and create date column
+#' 
+#' @param ndviframe data frame of raw ndvi data from google earth engine
+get_date_from_index = function(ndviframe) {
+  ndviframe$year = substr(ndviframe$system.index,13,16)
+  ndviframe$month = substr(ndviframe$system.index,17,18)
+  ndviframe$day = substr(ndviframe$system.index,19,20)
+  ndviframe$date = as.Date(paste(ndviframe$year, ndviframe$month, ndviframe$day, sep='-'))
+  return(ndviframe)
+}
+
+#' @description NDVI data from google earth engine: get date information from system.index and create date column
+#' 
+#' @param ndviframe data frame of raw ndvi data from google earth engine
+get_date_from_index_ndvi = function(ndviframe) {
+  ndviframe$year = substr(ndviframe$system.index,1,4)
+  ndviframe$month = substr(ndviframe$system.index,5,6)
+  ndviframe$day = substr(ndviframe$system.index,7,8)
+  ndviframe$date = as.Date(paste(ndviframe$year, ndviframe$month, ndviframe$day, sep='-'))
+  return(ndviframe)
+}
+
+#' @description process an individual ndvi file, including removing values where cloud cover was above a defined threshhold
+#' 
+#' @param ndviframe data frame of raw ndvi data from google earth engine
+#' @param min_pct_pixel_coverage minimum % clear pixels in order to keep the data from the image
+process_individual_ndvi_file = function(ndviframe, min_pct_pixel_coverage) {
+  totalpixels = max(ndviframe$NDVI_count)
+  ndviframe$NDVI_mean[ndviframe$NDVI_count<(totalpixels*min_pct_pixel_coverage)] <- NA
+  
+  ndviframe2 = ndviframe %>%
+    dplyr::select(year, month, NDVI_mean) %>%
+    group_by(year, month) %>%
+    summarize(NDVI = mean(NDVI_mean, na.rm=T))
+  
+  return(ndviframe2)
+}
+
+
+l5 = read.csv('GEEcode/1000m/Landsat5_SR_NDVI_Portal_2004_2013.csv', stringsAsFactors = F) %>% get_date_from_index() %>%
+  arrange(date) %>% process_individual_ndvi_file(min_pct_pixel_coverage = .75)
+l5b = read.csv('GEEcode/1000m/Landsat5_T1_32day_NDVI_Portal_2004_2013.csv', stringsAsFactors = F) %>% get_date_from_index_ndvi()
+l7 = read.csv('GEEcode/1000m/Landsat7_SR_NDVI_Portal_2004_2013.csv', stringsAsFactors = F) %>% get_date_from_index() %>%
+  arrange(date) %>% process_individual_ndvi_file(min_pct_pixel_coverage = .75)
+l7b = read.csv('GEEcode/1000m/Landsat7_T1_32DAY_NDVI_Portal_2004_2013.csv', stringsAsFactors = F) %>% get_date_from_index_ndvi()
+```
+
+## Compare GEE data products
+
+There are many options for getting Landsat NDVI data from USGS using Google Earth Engine. There are 8-day and 32-day NDVI products, or you can obtain the Surface Reflectance product and calculate NDVI manually using their function. The advantage of manual calculation is that the SR product comes with a built in pixel quality band that indicates cloud, cloud shadow, and other potential problems for each pixel. I want to compare the 32-day NDVI product to manual calculation for the dates and locations for Portal. 
+
+
+```{r compare, echo=F}
+plot(l5b$date, l5b$NDVI_mean, type='b', xlab='',ylab='NDVI',ylim=c(-.1,.4))
+lines(as.Date(paste(l5$year,l5$month,'01',sep='-')), l5$NDVI, col='red',type='b')
+legend('bottom',legend=c('Landsat5 32day NDVI','Landsat5 SR'),col=c('black','red'),lty=1)
+```
+
+The 32-day NDVI product seems to have some outlier points that are too low. Without a QA band there is no analytical way to identify these.
+
+
+## Landsat5 vs Landsat7
+
+Landsat5 data is available for 1984-2011. This covers the first time period of the project (1995-2006) but not the second (2004-2013). I will have to use Landsat7 for the second time period, despite its SLC issue (data is available for Landsat7 1999-present). The two satellites hold the same sensors, but I still want to compare their products to confirm the data is comparable. 
+
+```{r landsat5 vs 7, echo=FALSE}
+plot(as.Date(paste(l5$year,l5$month,'01',sep='-')), l5$NDVI, col='red',type='b', xlab='',ylab='NDVI',ylim=c(0,.47))
+lines(as.Date(paste(l7$year,l7$month,'01',sep='-')), l7$NDVI, col='blue',type='b')
+legend('bottom',legend=c('Landsat5 SR','Landsat7 SR'),col=c('red','blue'),lty=1)
+```
+
+
+Landsat 5 and 7 seem to agree very closely, so I feel comfortable using Landsat5 for the first time period and Landsat7 for the second.
