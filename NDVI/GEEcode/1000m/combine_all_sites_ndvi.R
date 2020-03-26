@@ -1,5 +1,6 @@
 # Combine NDVI from the various sites into one data frame
 # EMC 12/18/19
+# re-run 3/26/20 with updated JRN SMES gps points
 
 library(dplyr)
 
@@ -128,7 +129,7 @@ ndvi_1995_2006 = merge(jrn1, por, by=c('year','month'), all=T) %>%
   merge(sev8, all=T) %>%
   merge(sgs)
 
-write.csv(ndvi_1995_2006, 'NDVI/ndvi_1995_2006.csv', row.names = F)
+write.csv(ndvi_1995_2006, 'NDVI/ndvi_1995_2006_updated.csv', row.names = F)
 
 # =======================================
 # combine all 2004-2013 timeseries
@@ -223,4 +224,4 @@ ndvi_2004_2013 = merge(jrn1b, porb, by=c('year','month'), all=T) %>%
   merge(sev8b, all=T) %>%
   merge(sgsb)
 
-write.csv(ndvi_2004_2013, 'NDVI/ndvi_2004_2013.csv', row.names = F)
+write.csv(ndvi_2004_2013, 'NDVI/ndvi_2004_2013_updated.csv', row.names = F)
